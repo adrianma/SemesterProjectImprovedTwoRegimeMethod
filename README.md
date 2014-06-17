@@ -1,4 +1,4 @@
-semester_project_improved_two_regime_method
+SemesterProjectImprovedTwoRegimeMethod
 ===========================================
 This project is a Semester Project conducted at ETH Zurich by Adrian Martinez Gomez (adrian4.estu@gmail.com),
 by the supervision of Michael Klann from the ifA department.
