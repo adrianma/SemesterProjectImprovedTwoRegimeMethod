@@ -26,7 +26,7 @@ sN = (stEnd-st)/sDeltaT;
 sNTrials = 10;
 
 %% Simulations
-sMu = zeros(length(vT),2); sVarObserved = zeros(length(vT),2);
+sMu = zeros(length(vT),2); sSigmaObserved = zeros(2,2);
 sbinWidth = 0.25;
 bins = [-50:sbinWidth:50;-50:sbinWidth:50];
 
@@ -41,7 +41,7 @@ rGillespie = struct('sxBoundaryFR1',sxBoundaryFR1,'sxBoundaryFR2',...
 
 %% Simulation
 ssMu = zeros(length(sNTrials),2);
-ssVarObserved = zeros(length(sNTrials),2);
+ssVarObserved = cell(length(sNTrials),1);
 
 tic;
 for jj = 1:sNTrials
@@ -65,14 +65,13 @@ for jj = 1:sNTrials
     
     % normfit also works for 2D
     % the computation of sVarObserved, however, should be rewritten!
-    [sMu,sVarObserved] = normfit(rData.vXY);
-    sVarObserved = sVarObserved^2;
+    [sMu,sSigmaObserved] = normfit(rData.vXY);
     sGillespieRuntime = toc;
     fprintf('\nHybrid algorithm runtime %f s \n',sGillespieRuntime);
     fprintf('\n');
     
     ssMu(jj,:) = sMu;
-    ssVarObserved(jj,:) = sVarObserved;
+    ssVarObserved{jj} = sSigmaObserved;
     
 end
 
@@ -84,7 +83,7 @@ end
 
 % Compute the mean for al sNTrials.
 ssMu_mean = mean(ssMu);
-ssVarObserved_mean = mean(ssVarObserved);
+ssVarObserved_mean = mean(cell2mat{ssVarObserved});
 
 disp('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH');
 disp(['Mean of the mean for all simulations: ',num2str(ssMu_mean)]);
@@ -114,13 +113,13 @@ end
 vvX = rData.vXY;
 
 %% Compute the (effective) diffusion coefficiont sDEff
-sDEff = sVarObserved(end)/(2*rGillespie.sDeltaT*sN);
+sDEff = sSigmaObserved(end)/(2*rGillespie.sDeltaT*sN);
 disp(['D_eff = ',num2str(sDEff),' compared to D = ',...
     num2str(rGillespie.sD)]);
 fprintf('\n \n');
 
 %% Compare to the normal distribution and expected distribution
-if(1)
+if(0)
     % Declare vector with mean sMu and variance vvNormal.
     if(1)
         vvNormal = sMu(end) + sVarObserved(end).*randn(sNParticles,1);
